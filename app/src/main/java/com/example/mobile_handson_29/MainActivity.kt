@@ -1,14 +1,18 @@
 package com.example.mobile_handson_29
 
 import android.app.DatePickerDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -17,9 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                FitnessTrackerScreen(db, this.lifecycleScope, this)
+                FitnessTrackerScreen(db, this.lifecycleScope)
             }
         }
     }
@@ -43,8 +44,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FitnessTrackerScreen(
     db: AppDatabase,
-    scope: androidx.lifecycle.LifecycleCoroutineScope,
-    activityContext: Context
+    scope: androidx.lifecycle.LifecycleCoroutineScope
 ) {
     val context = LocalContext.current
 
@@ -104,7 +104,7 @@ fun FitnessTrackerScreen(
         Button(onClick = {
             val calendar = Calendar.getInstance()
             DatePickerDialog(
-                activityContext,
+                context,
                 { _, year, month, dayOfMonth ->
                     selectedDate = "$year-${month + 1}-$dayOfMonth"
                 },
@@ -174,12 +174,9 @@ fun FitnessTrackerScreen(
             }
         }
 
-
-
-
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(activities) { activity ->
-                ActivityCard(activity = activity, context = activityContext)
+                ActivityCard(activity = activity)
             }
         }
     }
@@ -187,13 +184,13 @@ fun FitnessTrackerScreen(
 
 
 @Composable
-fun ActivityCard(activity: ActivityEntity, context: Context) {
+fun ActivityCard(activity: ActivityEntity) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable {
-
                 val intent = Intent(context, SummaryActivity::class.java)
                 intent.putExtra("DATE_KEY", activity.date)
                 context.startActivity(intent)
@@ -205,26 +202,6 @@ fun ActivityCard(activity: ActivityEntity, context: Context) {
                 text = "${activity.duration} min on ${activity.date}",
                 style = MaterialTheme.typography.bodySmall
             )
-        }
-    }
-}
-
-@Database(entities = [ActivityEntity::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun activityDao(): ActivityDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext, AppDatabase::class.java, "fitness_db"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
         }
     }
 }

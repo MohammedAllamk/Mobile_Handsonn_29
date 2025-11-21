@@ -27,7 +27,7 @@ class SummaryActivity : AppCompatActivity() {
 
             lifecycleScope.launch(Dispatchers.IO) {
                 val activities = db.activityDao().getByDate(dateReceived)
-                val total = activities.sumOf { it.duration }
+                val total = db.activityDao().getTotalDuration(dateReceived) ?: 0
 
                 withContext(Dispatchers.Main) {
                     tvTotal.text = "Total Duration: $total minutes"

@@ -16,5 +16,5 @@ interface ActivityDao {
     suspend fun getByDate(filterDate: String): List<ActivityEntity>
 
     @Query("SELECT SUM(duration) FROM fitness_activities WHERE date = :filterDate")
-    suspend fun getTotalDuration(filterDate: String): Int
+    suspend fun getTotalDuration(filterDate: String): Int?
 }
