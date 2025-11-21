@@ -73,7 +73,9 @@ fun FitnessTrackerScreen(
     }
 
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
 
         Text(
             text = "Fitness Tracker",
@@ -85,13 +87,17 @@ fun FitnessTrackerScreen(
             value = activityName,
             onValueChange = { activityName = it },
             label = { Text("Activity Name") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = durationText,
             onValueChange = { durationText = it.filter { char -> char.isDigit() } },
             label = { Text("Duration (minutes)") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
         )
 
 
@@ -106,7 +112,9 @@ fun FitnessTrackerScreen(
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).show()
-        }, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+        }, modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)) {
             Text("Date: $selectedDate")
         }
 
@@ -116,7 +124,13 @@ fun FitnessTrackerScreen(
                 val duration = durationText.toIntOrNull()
                 if (activityName.isNotBlank() && duration != null && selectedDate != "Select Date") {
                     scope.launch(Dispatchers.IO) {
-                        db.activityDao().insert(ActivityEntity(activityName = activityName.trim(), duration = duration, date = selectedDate))
+                        db.activityDao().insert(
+                            ActivityEntity(
+                                activityName = activityName.trim(),
+                                duration = duration,
+                                date = selectedDate
+                            )
+                        )
                         withContext(Dispatchers.Main) {
                             activityName = ""
                             durationText = ""
@@ -128,24 +142,41 @@ fun FitnessTrackerScreen(
                     Toast.makeText(context, "Please complete all fields", Toast.LENGTH_SHORT).show()
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
         ) {
             Text("Add Activity")
         }
 
 
-        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Button(onClick = { loadActivities(selectedDate) }, modifier = Modifier.weight(1f).padding(end = 4.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(
+                onClick = { loadActivities(selectedDate) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 4.dp)
+            ) {
                 Text("Filter")
             }
-            Button(onClick = { loadActivities() }, modifier = Modifier.weight(1f).padding(start = 4.dp)) {
+            Button(
+                onClick = { loadActivities() },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 4.dp)
+            ) {
                 Text("Show All")
             }
         }
 
-        Divider()
 
-       
+
+
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(activities) { activity ->
                 ActivityCard(activity = activity, context = activityContext)
@@ -170,7 +201,10 @@ fun ActivityCard(activity: ActivityEntity, context: Context) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = activity.activityName, style = MaterialTheme.typography.titleMedium)
-            Text(text = "${activity.duration} min on ${activity.date}", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "${activity.duration} min on ${activity.date}",
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
